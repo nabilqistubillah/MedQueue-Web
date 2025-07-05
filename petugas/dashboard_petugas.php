@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'inc_koneksi.php';
+require_once '../inc_koneksi.php';
 
 if (!isset($_SESSION['id_petugas'])) {
     header("Location: login_petugas.php");
@@ -20,8 +20,7 @@ if (isset($_GET['layani'])) {
     mysqli_query($koneksi, "UPDATE antrean SET status_antrean = 'dilayani' WHERE id_antrean = '$id_antrean'");
 
     // Catat ke riwayat layanan
-    mysqli_query($koneksi, "INSERT INTO riwayat_layanan (id_antrean, id_petugas, waktu_dilayani) 
-                         VALUES ('$id_antrean', '$id_petugas', '$waktu')");
+    mysqli_query($koneksi, "INSERT INTO riwayat_layanan (id_antrean, id_petugas, waktu_dilayani) VALUES ('$id_antrean', '$id_petugas', '$waktu')");
 
     header("Location: dashboard_petugas.php");
     exit;

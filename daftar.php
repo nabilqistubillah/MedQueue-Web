@@ -45,14 +45,16 @@ if (isset($_POST['submit'])) {
         <label>Pilih Layanan:</label><br>
         <select name="id_layanan" required>
             <option value="">-- Pilih --</option>
-            <?php while ($layanan = mysqli_fetch_assoc($query_layanan)) : ?>
-                <option value="<?= $layanan['id_layanan']; ?>">
-                    <?= $layanan['nama_layanan']; ?>
-                </option>
-            <?php endwhile; ?>
+             <?php
+                $layanan = mysqli_query($koneksi, "SELECT * FROM layanan");
+                while ($row = mysqli_fetch_assoc($layanan)) {
+                    echo "<option value='{$row['id_layanan']}'>{$row['nama_layanan']}</option>";
+                }
+            ?>
         </select><br><br>
 
-        <button type="submit" name="submit">Ambil Antrean</button>
+        <button type="submit" name="submit">Daftar</button>
+
     </form>
 </body>
 </html>

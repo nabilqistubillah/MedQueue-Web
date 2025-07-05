@@ -17,6 +17,8 @@ $query = mysqli_query($koneksi, "
 </head>
 <body>
     <h2>Daftar Antrean</h2>
+    <a href="kelola_antrean.php"><button>Kelola Antrean</button></a>
+
     <table border="1" cellpadding="8">
         <tr>
             <th>Nomor Antrean</th>
@@ -33,5 +35,7 @@ $query = mysqli_query($koneksi, "
         </tr>
         <?php } ?>
     </table>
+    <a href="daftar.php"><button>< Daftar</button></a>
+
 </body>
 </html>

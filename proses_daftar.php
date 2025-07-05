@@ -1,7 +1,7 @@
 <?php
 include 'inc_koneksi.php';
 
-if (isset($_POST['submit'])) {
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $nama       = $_POST['nama'];
     $nomor_hp   = $_POST['nomor_hp'];
     $email      = $_POST['email'];
@@ -14,11 +14,17 @@ if (isset($_POST['submit'])) {
         $id_pasien = $data['id_pasien'];
     } else {
         // 2. Simpan ke tabel pasien
-        mysqli_query($koneksi, "INSERT INTO pasien (nama, nomor_hp, email, tanggal_daftar) VALUES ('$nama', '$nomor_hp', '$email', CURDATE())");
-        $id_pasien = mysqli_insert_id($koneksi); // ambil ID terakhir yang baru dimasukkan
+        $insert_pasien = mysqli_query($koneksi, "INSERT INTO pasien (nama, nomor_hp, email, tanggal_daftar) VALUES ('$nama', '$nomor_hp', '$email', CURDATE())");
+
+        if (!$insert_pasien) {
+            echo "Gagal insert ke tabel pasien: " . mysqli_error($koneksi);
+            exit;
+        }
+
+        $id_pasien = mysqli_insert_id($koneksi);
     }
 
-    // 3. Buat nomor antrean otomatis (misal: A001, A002, ...)
+    // 3. Buat nomor antrean otomatis
     $q_last = mysqli_query($koneksi, "SELECT nomor_antrean FROM antrean WHERE tanggal = CURDATE() ORDER BY id_antrean DESC LIMIT 1");
     if (mysqli_num_rows($q_last) > 0) {
         $last = mysqli_fetch_assoc($q_last);
@@ -26,14 +32,21 @@ if (isset($_POST['submit'])) {
     } else {
         $angka = 1;
     }
-    $nomor_antrian = 'A' . str_pad($angka, 3, '0', STR_PAD_LEFT);
+
+    $nomor_antrean = 'A' . str_pad($angka, 3, '0', STR_PAD_LEFT);
 
     // 4. Simpan ke tabel antrean
-    mysqli_query($koneksi, "INSERT INTO antrean (id_pasien, id_layanan, nomor_antrian, tanggal, status_antrean) VALUES ('$id_pasien', '$id_layanan', '$nomor_antrian', CURDATE(), 'menunggu')");
+    $insert_antrean = mysqli_query($koneksi, "INSERT INTO antrean (id_pasien, id_layanan, nomor_antrean, tanggal, status_antrean) VALUES ('$id_pasien', '$id_layanan', '$nomor_antrean', CURDATE(), 'menunggu')");
 
-    // 5. Redirect atau tampilkan pesan
+    if (!$insert_antrean) {
+        echo "Gagal daftar antrean: " . mysqli_error($koneksi);
+        exit;
+    }
+
+    // 5. Redirect ke halaman antrean
     echo "<script>
-        alert('Pendaftaran berhasil! Nomor Antrian Anda: $nomor_antrian'); window.location='antrean.php';
+        alert('Pendaftaran berhasil! Nomor Antrean Anda: $nomor_antrean');
+        window.location.href = 'antrean.php';
     </script>";
 }
 ?>
